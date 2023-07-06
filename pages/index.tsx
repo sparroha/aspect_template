@@ -62,7 +62,7 @@ export default function Index(props) {
 		<Row>
 			<Col>
 				<div>
-					<h1>Hello World!</h1>
+					<h1 onClick={()=>alert()}>Hello World!</h1>
 				</div>
 			</Col>
 		</Row>

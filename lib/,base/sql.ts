@@ -5,9 +5,9 @@ import mysql from 'mysql2'
  * @see https://www.npmjs.com/package/mysql2#using-connection-pools
  */
 export const unsafePool = mysql.createPool({
-  host: process.env.MYSQL_HOST || 'db.700s.net',
-  database: process.env.MYSQL_DB || '700social',
-  user: process.env.MYSQL_USER || '700social',
+  host: process.env.MYSQL_HOST,
+  database: process.env.MYSQL_DB,
+  user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASS,
 }).promise()
 
