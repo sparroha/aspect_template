@@ -4,7 +4,7 @@ import { BuildContents, BuildRow, ColBuilder, ContentBuilder, RowBuilder } from 
 import { ActiveUser, LoginNav, Profile, activateUser } from './login/[userlogin]'
 import { GetServerSideProps } from 'next'
 import requestIp from 'request-ip';
-import useVectorTransition from '../components/vectortransition'
+import { useVectorTransition } from '../components/vectortransition'
 
 export default function Index(props) {
 	const [user, setUser] = React.useState(null)
@@ -85,25 +85,19 @@ export default function Index(props) {
 	}
 
 	const {center, bounds, nextVector, nextPosition, setNextVector, setNextPosition} = useVectorTransition()
-	const vectorA = useVectorTransition()
-	const vectorB = useVectorTransition()
 
-	return <div style={{position: 'relative'}}><Container>
-		<div style={{position: 'absolute', ...vectorA.nextPosition, transition: 'left 1s, top 1s', transitionTimingFunction: 'linear', width: 22, height: 22, backgroundColor: 'red'}}></div>
-		<div style={{position: 'absolute', ...vectorB.nextPosition, transition: 'left 1s, top 1s', transitionTimingFunction: 'linear', width: 22, height: 22, border: '1px solid black'}}></div>
+	return <Container>
 		<Row>
 			<Col>
-				<div style={{position: 'relative'}}>
-					<h1 style={{...nextPosition, transition: 'left 1s, top 1s', transitionTimingFunction: 'linear', position: 'absolute', border: '5px outset grey', backgroundColor: '#888'}}
-					onClick={()=>setNextPosition((last)=>{
-						let w = window.innerWidth/2
-						let h = window.innerHeight/2
-						let l = Math.random()*(w)-w/2
-						let t = Math.random()*(h)-h/2
+				<h1 style={{...nextPosition, transition: 'left 1s, top 1s', transitionTimingFunction: 'linear', position: 'absolute', border: '5px outset grey', backgroundColor: '#888'}}
+				onClick={()=>setNextPosition((last)=>{
+					let w = window.innerWidth/2
+					let h = window.innerHeight/2
+					let l = Math.random()*(w)-w/2
+					let t = Math.random()*(h)-h/2
 
-						return {left: last.top+l, top: last.top+t}
-						})}>Hello World!</h1>
-				</div>
+					return {left: last.top+l, top: last.top+t}
+					})}>Hello World!</h1>
 			</Col>
 		</Row>
 		<BuildRow id={'row-1'} cols={[
@@ -146,7 +140,7 @@ export default function Index(props) {
 			},
 			displayActiveUsers
 		]}/>
-	</Container></div>
+	</Container>
 }
 
 //FOR TS: TypeScript
