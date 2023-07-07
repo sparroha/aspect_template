@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { use, useEffect } from 'react'
 import { Container, Row, Col } from 'react-bootstrap'
 import { BuildContents, BuildRow, ColBuilder, ContentBuilder, RowBuilder } from '../components/page_builder'
 import { ActiveUser, LoginNav, Profile, activateUser } from './login/[userlogin]'
@@ -82,12 +82,65 @@ export default function Index(props) {
 		id: 'user-row',
 		rows: [userDetails, userLogin]
 	}
-	const [nextPosition, setNextPosition] = React.useState({left: 0, top: 0})
+
+	const [center, setCenter] = React.useState({left: 0, top: 0})
+	const [bounds, setBounds] = React.useState({left: 0, right: 0, top: 0, bottom: 0})
+	const [nextPosition, setNextPosition] = React.useState({left: center.left, top: center.top})
+	const [nextVector, setNextVector] = React.useState({x: 0, y: 0})
+	useEffect(()=>{
+		setCenter({left: window.innerWidth/2, top: window.innerHeight/2})
+		setBounds({left: 0, right: window.innerWidth, top: 0, bottom: window.innerHeight})
+	}, [])
+	//LINEAR TRANSITION
+	useEffect(()=>{return
+		let f = ()=>setNextPosition((last)=>{
+			let nextX = (Math.random()*200-100)+last.left
+			let nextY = (Math.random()*200-100)+last.top
+			if(nextX<bounds.left)nextX=bounds.left
+			if(nextX>bounds.right)nextX=bounds.right
+			if(nextY<bounds.top)nextY=bounds.top
+			if(nextY>bounds.bottom)nextY=bounds.bottom
+			return {left: nextX, top: nextY}
+		})
+		const interval = setInterval(f, 1000)
+		return ()=>clearInterval(interval)
+	}, [])
+
+	//VECTOR TRANSITION
+	useEffect(()=>{
+		let f = ()=>setNextPosition((last)=>{
+			let nextX = last.left+nextVector.x
+			let nextY = last.top+nextVector.y
+			if(nextX<bounds.left||nextX>bounds.right)nextVector.x*=-1
+			if(nextY<bounds.top||nextY>bounds.bottom)nextVector.y*=-1
+			return {left: nextX, top: nextY}
+		})
+		const interval = setInterval(f, 100)
+		return ()=>clearInterval(interval)
+	}, [nextVector])
+	useEffect(()=>{
+		let f = ()=>setNextVector((last)=>{
+			let nextX = last.x+(Math.random()*4-2)
+			let nextY = last.y+(Math.random()*4-2)
+			return {x: nextX, y: nextY}
+		})
+		const interval = setInterval(f, 1000)
+		return ()=>clearInterval(interval)
+	}, [])
+
 	return <Container>
 		<Row>
 			<Col>
 				<div style={{position: 'relative'}}>
-					<h1 style={{...nextPosition, position: 'absolute', border: '5px outset grey', backgroundColor: '#888'}} onClick={()=>setNextPosition({left: Math.random()*window.innerWidth-300, top: Math.random()*window.innerHeight})}>Hello World!</h1>
+					<h1 style={{...nextPosition, transition: 'left 1s, top 1s', position: 'absolute', border: '5px outset grey', backgroundColor: '#888'}}
+					onClick={()=>setNextPosition((last)=>{
+						let w = window.innerWidth/2
+						let h = window.innerHeight/2
+						let l = Math.random()*(w)-w/2
+						let t = Math.random()*(h)-h/2
+
+						return {left: last.top+l, top: last.top+t}
+						})}>Hello World!</h1>
 				</div>
 			</Col>
 		</Row>
@@ -95,7 +148,7 @@ export default function Index(props) {
 			{
 				id: 'col-1',
 				label: 'Column 1',
-				content: 'This is column 1',
+				content: `NextVector: ${JSON.stringify(nextVector)}`,
 				style: {
 					backgroundColor: 'red',
 					color: 'white'
@@ -104,7 +157,7 @@ export default function Index(props) {
 			{
 				id: 'col-2',
 				label: 'Column 2',
-				content: 'This is column 2',
+				content: `NextPosition: ${JSON.stringify(nextPosition)}`,
 				style: {
 					backgroundColor: 'blue',
 					color: 'white'
