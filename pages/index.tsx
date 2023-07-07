@@ -1,13 +1,37 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Container, Row, Col } from 'react-bootstrap'
 import { BuildContents, BuildRow, ColBuilder, ContentBuilder, RowBuilder } from '../components/page_builder'
-import { LoginNav, Profile } from './login/[userlogin]'
+import { ActiveUser, LoginNav, Profile, activateUser } from './login/[userlogin]'
 import { GetServerSideProps } from 'next'
 import requestIp from 'request-ip';
 
 export default function Index(props) {
 	const [user, setUser] = React.useState(null)
-	const [activeUsers, setActiveUsers] = React.useState([])
+	const [activeUsers, setActiveUsers]:[ActiveUser[], Function] = React.useState([])
+	/*useEffect(()=>{//LOL copilot made a sily anchor tag handler
+		const clickHandler = (e)=>{
+			if(e.target.tagName.toLowerCase()=='a'){
+				e.preventDefault()
+				const href = e.target.getAttribute('href')
+				window.history.pushState({}, '', href)
+				const navEvent = new PopStateEvent('popstate')
+				window.dispatchEvent(navEvent)
+			}
+		}
+		window.addEventListener('click', clickHandler)
+		return ()=>{
+			window.removeEventListener('click', clickHandler)
+		}
+	}, [])*/
+	useEffect(()=>{
+		const clickHandler = (e)=>{
+			if(user)activateUser(user.username)
+		}
+		window.addEventListener('click', clickHandler)
+		return ()=>{
+			window.removeEventListener('click', clickHandler)
+		}
+	}, [user])
 
 	const displayActiveUsers: ColBuilder = {
 		id: 'active-users',
@@ -15,9 +39,9 @@ export default function Index(props) {
 		content: <div>
 					<h2>Active Users</h2>
 					<ul>
-						{activeUsers/*.map((u, i)=>{
-							return <li key={i}>{u}</li>
-						})*/}
+						{activeUsers.map((u, i)=>{
+							return <li key={i}>{u.name}: last active {Math.floor((new Date().getTime()-u.time)/60000)} min ago</li>
+						})}
 					</ul>
 				</div>,
 		style: {
@@ -89,7 +113,7 @@ export default function Index(props) {
 			{
 				id: 'col-3',
 				label: 'Column 3',
-				content: 'This is column 3',
+				content: <a href={'testautobuild'}>Test Autobuild</a>,
 				style: {
 					backgroundColor: 'green',
 					color: 'white'

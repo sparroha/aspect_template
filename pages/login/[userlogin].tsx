@@ -235,7 +235,10 @@ export function Profile(props) {
   },[data,usersloaded])
 
   useEffect(()=>{
-    if(activeUsers&&setActiveUsers)setActiveUsers(activeUsers)//send data to external
+    if(activeUsers&&setActiveUsers){
+      const ar: ActiveUser[] = JSON.parse(activeUsers)
+      setActiveUsers(ar)//send data to external
+    }
   },[activeUsers])
 
   if (error) {
