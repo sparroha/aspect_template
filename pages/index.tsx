@@ -58,12 +58,12 @@ export default function Index(props) {
 		id: 'user-row',
 		rows: [userDetails, userLogin]
 	}
-
+	const [nextPosition, setNextPosition] = React.useState({left: 0, top: 0})
 	return <Container>
 		<Row>
 			<Col>
-				<div>
-					<h1 onClick={()=>alert()}>Hello World!</h1>
+				<div style={{position: 'relative'}}>
+					<h1 style={{...nextPosition, position: 'absolute', border: '5px outset grey', backgroundColor: '#888'}} onClick={()=>setNextPosition({left: Math.random()*window.innerWidth-300, top: Math.random()*window.innerHeight})}>Hello World!</h1>
 				</div>
 			</Col>
 		</Row>
