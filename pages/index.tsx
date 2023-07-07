@@ -89,12 +89,12 @@ export default function Index(props) {
 	const vectorB = useVectorTransition()
 
 	return <div style={{position: 'relative'}}><Container>
-		<div style={{position: 'absolute', left: vectorA.nextPosition.left, top: vectorA.nextPosition.top, transition: 'left 1s, top 1s', width: 10, height: 10, backgroundColor: 'red'}}></div>
-		<div style={{position: 'absolute', left: vectorB.nextPosition.left, top: vectorB.nextPosition.top, transition: 'left 1s, top 1s', width: 10, height: 10, border: '1px solid black'}}></div>
+		<div style={{position: 'absolute', ...vectorA.nextPosition, transition: 'left 1s, top 1s', transitionTimingFunction: 'linear', width: 22, height: 22, backgroundColor: 'red'}}></div>
+		<div style={{position: 'absolute', ...vectorB.nextPosition, transition: 'left 1s, top 1s', transitionTimingFunction: 'linear', width: 22, height: 22, border: '1px solid black'}}></div>
 		<Row>
 			<Col>
 				<div style={{position: 'relative'}}>
-					<h1 style={{...nextPosition, transition: 'left 1s, top 1s', position: 'absolute', border: '5px outset grey', backgroundColor: '#888'}}
+					<h1 style={{...nextPosition, transition: 'left 1s, top 1s', transitionTimingFunction: 'linear', position: 'absolute', border: '5px outset grey', backgroundColor: '#888'}}
 					onClick={()=>setNextPosition((last)=>{
 						let w = window.innerWidth/2
 						let h = window.innerHeight/2
