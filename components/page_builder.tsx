@@ -30,7 +30,7 @@ export function TaggedHeaders(props: HeaderTags) {
 }
 export type ColBuilder = {
     id: string
-    label: string
+    label?: string
     content: any
     style?: {}
     className?: string
@@ -39,7 +39,7 @@ export function BuildColumn(props: ColBuilder) {
     const { id, label, content, style, className } = props
     const _content = (typeof content === 'string' && content.includes('.png')) ? <img src={content} width={'200px'}/> : <>{content}</>
     return <Col id={id} className={className} style={{...style}}>
-        <h1>{label}</h1>
+        {label?<h1>{label}</h1>:null}
         {_content}
     </Col>
 }

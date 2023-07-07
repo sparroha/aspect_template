@@ -31,10 +31,11 @@ export default function Index(props) {
 			{
 				id: 'user',
 				label: 'User Details',
-				content: <Profile ip={props.ip} setUser={setUser} setActiveUsers={setActiveUsers} />,
+				content: <Profile ip={props.ip} setUser={setUser} setActiveUsers={setActiveUsers}/>,
 				style: {
-					backgroundColor: 'gray',
-					color: 'black'
+					backgroundColor: '#aaa',
+					color: 'black',
+					padding: 12
 				}
 			}
 		]
@@ -47,7 +48,7 @@ export default function Index(props) {
 				label: 'User Login',
 				content: <LoginNav user={user} homepage={'index'} />,
 				style: {
-					backgroundColor: 'gray',
+					backgroundColor: '#ccc',
 					color: 'black'
 				}
 			}
@@ -101,8 +102,7 @@ export default function Index(props) {
 				label: '',
 				content: <BuildContents {...userRow}/>,
 				style: {
-					backgroundColor: 'gray',
-					color: 'black'
+					marginTop: 0
 				}
 			},
 			displayActiveUsers
