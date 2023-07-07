@@ -4,6 +4,7 @@ import { BuildContents, BuildRow, ColBuilder, ContentBuilder, RowBuilder } from 
 import { ActiveUser, LoginNav, Profile, activateUser } from './login/[userlogin]'
 import { GetServerSideProps } from 'next'
 import requestIp from 'request-ip';
+import useVectorTransition from '../components/vectortransition'
 
 export default function Index(props) {
 	const [user, setUser] = React.useState(null)
@@ -83,52 +84,13 @@ export default function Index(props) {
 		rows: [userDetails, userLogin]
 	}
 
-	const [center, setCenter] = React.useState({left: 0, top: 0})
-	const [bounds, setBounds] = React.useState({left: 0, right: 0, top: 0, bottom: 0})
-	const [nextPosition, setNextPosition] = React.useState({left: center.left, top: center.top})
-	const [nextVector, setNextVector] = React.useState({x: 0, y: 0})
-	useEffect(()=>{
-		setCenter({left: window.innerWidth/2, top: window.innerHeight/2})
-		setBounds({left: 0, right: window.innerWidth, top: 0, bottom: window.innerHeight})
-	}, [])
-	//LINEAR TRANSITION
-	useEffect(()=>{return
-		let f = ()=>setNextPosition((last)=>{
-			let nextX = (Math.random()*200-100)+last.left
-			let nextY = (Math.random()*200-100)+last.top
-			if(nextX<bounds.left)nextX=bounds.left
-			if(nextX>bounds.right)nextX=bounds.right
-			if(nextY<bounds.top)nextY=bounds.top
-			if(nextY>bounds.bottom)nextY=bounds.bottom
-			return {left: nextX, top: nextY}
-		})
-		const interval = setInterval(f, 1000)
-		return ()=>clearInterval(interval)
-	}, [])
+	const {center, bounds, nextVector, nextPosition, setNextVector, setNextPosition} = useVectorTransition()
+	const vectorA = useVectorTransition()
+	const vectorB = useVectorTransition()
 
-	//VECTOR TRANSITION
-	useEffect(()=>{
-		let f = ()=>setNextPosition((last)=>{
-			let nextX = last.left+nextVector.x
-			let nextY = last.top+nextVector.y
-			if(nextX<bounds.left||nextX>bounds.right)nextVector.x*=-1
-			if(nextY<bounds.top||nextY>bounds.bottom)nextVector.y*=-1
-			return {left: nextX, top: nextY}
-		})
-		const interval = setInterval(f, 100)
-		return ()=>clearInterval(interval)
-	}, [nextVector])
-	useEffect(()=>{
-		let f = ()=>setNextVector((last)=>{
-			let nextX = last.x+(Math.random()*4-2)
-			let nextY = last.y+(Math.random()*4-2)
-			return {x: nextX, y: nextY}
-		})
-		const interval = setInterval(f, 1000)
-		return ()=>clearInterval(interval)
-	}, [])
-
-	return <Container>
+	return <div style={{position: 'relative'}}><Container>
+		<div style={{position: 'absolute', left: vectorA.nextPosition.left, top: vectorA.nextPosition.top, transition: 'left 1s, top 1s', width: 10, height: 10, backgroundColor: 'red'}}></div>
+		<div style={{position: 'absolute', left: vectorB.nextPosition.left, top: vectorB.nextPosition.top, transition: 'left 1s, top 1s', width: 10, height: 10, border: '1px solid black'}}></div>
 		<Row>
 			<Col>
 				<div style={{position: 'relative'}}>
@@ -184,7 +146,7 @@ export default function Index(props) {
 			},
 			displayActiveUsers
 		]}/>
-	</Container>
+	</Container></div>
 }
 
 //FOR TS: TypeScript
