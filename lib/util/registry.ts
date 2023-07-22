@@ -1,17 +1,23 @@
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import useSWR from "swr";
 
+/**
+ * 
+ * @param registry 
+ * @param defaultValue 
+ * @returns data: string, setter: Function, loaded: boolean
+ */
 export default function useRegister(registry: string, defaultValue: any):[string, Function, boolean]{
     
     //useLog('@useRegister://REGISTRY_NAME: '+registry+' :: REGISTRY: '+JSON.stringify(reg))
     const [currentsave, setCurentSave] = useState(registry)//current save
     const [registryLoaded, setRegistryLoaded] = useState(false)
     const [register, setRegister] = useState(JSON.stringify(defaultValue))//register setter and render function
-    const {data, error} = useSWR('../api/registry/'+registry, { refreshInterval: 500 })//get data from database
+    const {data, error} = useSWR('../api/registry/'+registry, { refreshInterval: 200 })//get data from database
     //useLog('@useRegister://REGISTER: '+JSON.stringify(register.current)+' :: LOADED: '+registryLoaded)
     useEffect(()=>{//load data from database
-        if(!data || !registryLoaded) return
-        if(data == null && data == undefined) return
+        if(!data) return
+        if(data == null || data == undefined) return
         setRegister(JSON.stringify(data))
     },[data])
     //INIT
@@ -22,6 +28,7 @@ export default function useRegister(registry: string, defaultValue: any):[string
         if(registry ==  null) {console.log('registry: '+registry); return}
         //if(register)return//overguard
         return getDB(registry).then(data=>{
+            if(!data) return
             if(data == null ) return
             if(data == undefined) return
             if(data == 0) {
@@ -46,11 +53,12 @@ export default function useRegister(registry: string, defaultValue: any):[string
     },[registry])//load registry
     //END INIT
 
-    return [register, (data) => {//works and tested
+    const saveData = useCallback((data) => {//save data to database{//works and tested
         setRegister(JSON.stringify(data))
         //console.log('@useRegister.saveRegister://set register '+JSON.stringify(registry)+': '+JSON.stringify(data))
         setDB(registry, data)
-    },registryLoaded]
+    },[registry])
+    return [register, saveData, registryLoaded]
 }
 
 //updates database with current register ref
