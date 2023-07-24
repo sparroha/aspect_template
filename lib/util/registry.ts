@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useSWR from "swr";
 
 /**
@@ -13,7 +13,7 @@ export default function useRegister(registry: string, defaultValue: any):[string
     const [currentsave, setCurentSave] = useState(registry)//current save
     const [registryLoaded, setRegistryLoaded] = useState(false)
     const [register, setRegister] = useState(JSON.stringify(defaultValue))//register setter and render function
-    const {data, error} = useSWR('../api/registry/'+registry, { refreshInterval: 200 })//get data from database
+    const {data, error} = useSWR('../api/registry/'+registry, { refreshInterval: 500 })//get data from database
     //useLog('@useRegister://REGISTER: '+JSON.stringify(register.current)+' :: LOADED: '+registryLoaded)
     useEffect(()=>{//load data from database
         if(!data) return
