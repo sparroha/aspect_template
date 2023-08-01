@@ -2,6 +2,35 @@ import { useCallback, useEffect, useState } from "react";
 import useSWR from "swr";
 
 /**
+ * Implementation
+ * 
+ * const defaultState = {}
+ * const state = useRef(defaultState)
+ * const [init, setInit] = useState(false)
+ * //[data, setData, dataLoaded]
+ * const [stateString, saveState, stateLoaded] = useRegister('uniqueid',defaultState)
+ * 
+ * //save state to database
+ * function save(){saveState({...state.current})}
+ * 
+ * //get stateString as object: compare to state.current
+ * const dbstate = useMemo(()=>
+ *     JSON.parse(stateString),
+ * [stateString])
+ * 
+ * useEffect(()=>{
+ *     if(stateLoaded && !init){
+ *         state.current = dbstate
+ *         setInit(true)
+ *     }
+ * },[stateLoaded])
+ * 
+ * //escape clause to prevent data desync
+ * if(!stateLoaded) return <>Loading...</>
+ * 
+ */
+
+/**
  * 
  * @param registry 
  * @param defaultValue 
@@ -28,13 +57,13 @@ export default function useRegister(registry: string, defaultValue: any):[string
         if(registry ==  null) {console.log('registry: '+registry); return}
         //if(register)return//overguard
         return getDB(registry).then(data=>{
-            if(!data) return
+            //if(!data) return
             if(data == null ) return
             if(data == undefined) return
-            if(data == 0) {
+            if(!data || data == 0) {
                 //console.log('@useRegister.loadDataOnce://fetch initializing new register: '+registry+': '+register)
                 setDB(registry, defaultValue)
-                return
+                //return
             }
             //console.log('@useRegister.loadDataOnce://fetch data to replace default register: '+register)
             //console.log('@useRegister.loadDataOnce://fetch with data for '+registry+': '+JSON.stringify(data))
