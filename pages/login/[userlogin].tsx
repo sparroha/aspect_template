@@ -3,21 +3,23 @@ import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { Button, Col, Container, Form, Row } from "react-bootstrap"
-import sql, { SqlParam } from "../../lib/,base/sql"
+import sql from "../../lib/,base/sql"
 import useSWR from 'swr'
 import requestIp from 'request-ip'
 import Head from "next/head"
 import useRegister, { getDB, setDB } from "../../lib/util/registry"
 
 export type User = {
-  username: string | string[],
-  email: string | string[],
-  access: string | string[],
-  message: string | string[],
-  homepage: string | string[],
-  ip: string | string[]
+  id: number,
+  username: string,
+  email: string,
+  hash: string,
+  access: number,
+  ip: string
+  message: string,
+  homepage: string,
 }
-const debugAccess='2'
+const debugAccess='2' 
 export type ActiveUser = {
   name: string,
   time: number,
@@ -52,25 +54,28 @@ export default function UserLogin({ip, homepage}) {
     const [user, setUser] = useState(null)
     const [menu, setMenu] = useState('show')
     const loginLayout = {
-      backgroundColor: '#0c0',
+      backgroundImage: 'linear-gradient(to bottom right, #4b4, #7c7, #ada)',
+      //backgroundColor: '#0c0',
       padding: '10px',
       paddingLeft: '20px',
       paddingRight: '20px',
-      borderRadius: '10px'
+      borderRadius: '5px'
     }
     const registerLayout = {
-      backgroundColor: '#cc0',
+      backgroundImage: 'linear-gradient(to bottom right, #44b, #77c, #aad)',
+      //backgroundColor: '#cc0',
       padding: '10px',
       paddingLeft: '20px',
       paddingRight: '20px',
-      borderRadius: '10px'
+      borderRadius: '5px'
     }
     const menuLayout = {
-      backgroundColor: '#c0c',
+      backgroundImage: 'linear-gradient(to bottom right, #557, #77a, #aad)',
+      //backgroundColor: '#c0c',
       padding: '10px',
       paddingLeft: '20px',
       paddingRight: '20px',
-      borderRadius: '10px'
+      borderRadius: '5px'
     }
     
     useEffect(() => { 
@@ -125,6 +130,15 @@ export default function UserLogin({ip, homepage}) {
                 method === 'email'?
                 <UpdateEmailForm homepage={homepage}/>
                 :<Button variant="primary" type="submit" onClick={() => {setMethod('email')}}>Update User Email</Button>
+              }</Col>
+              <Col sm={4} lg={5}></Col>
+            </Row>
+            <Row>
+              <Col sm={4} lg={5}></Col>
+              <Col xs={12} sm={4} lg={2} style={registerLayout}>{
+                method === 'forgot'?
+                <ForgotForm homepage={homepage}/>
+                :<Button variant="primary" type="submit" onClick={() => {/*setMethod('forgot')*/}}>{/*'Forgot User Email'*/}</Button>
               }</Col>
               <Col sm={4} lg={5}></Col>
             </Row>
@@ -213,6 +227,27 @@ function UpdateEmailForm({homepage}){
         <Button variant="primary" type="submit" formAction={"/login/update"}>Update</Button>
     </Form>
 }
+/**
+ * TODO
+ * @param param0 
+ * @returns 
+ */
+function ForgotForm({homepage}){
+  return <Form id={'forgotForm'}>
+        <Form.Group controlId="formEmail">
+            <Form.Label>Email address</Form.Label>
+            <Form.Control required type="email" name="email" placeholder={"email"}/>
+        </Form.Group>
+        <Form.Group controlId="formPassword">
+            <Form.Label>Password</Form.Label>
+            <Form.Control required type="password" name="password" placeholder="password"/>
+        </Form.Group>
+        <Form.Group controlId="formHidden">
+            <Form.Control required type="hidden" name="homepage" value={homepage} placeholder={homepage}/>
+        </Form.Group>
+        <Button variant="primary" type="submit" formAction={"/login/forgot"}>Forgot</Button>
+    </Form>
+}
 export const ACTIVEUSERS = 'active_users'
 export function Profile(props) {
   const [activeUsers, registerActiveUsers, usersloaded]:[string, Function, boolean] = useRegister(ACTIVEUSERS,[])
@@ -235,10 +270,7 @@ export function Profile(props) {
   },[data,usersloaded])
 
   useEffect(()=>{
-    if(activeUsers&&setActiveUsers){
-      const ar: ActiveUser[] = JSON.parse(activeUsers)
-      setActiveUsers(ar)//send data to external
-    }
+    if(activeUsers&&setActiveUsers)setActiveUsers(activeUsers)//send data to external
   },[activeUsers])
 
   if (error) {
@@ -250,9 +282,17 @@ export function Profile(props) {
   else {
     let {username, email, access} = data
     data.message = 'Welcome back '+data.username+'!'
-    return <div style={{...props.style, color: 'white', background: 'gray', borderRadius: '90px', padding: 12, textAlign: 'center'}}>
-          hello {username}!{`\<${email}\>`} Your access level is {access}.
-        </div>
+    return <div style={{...props.style,
+      color: 'white',
+      background: 'none repeat scroll 0 0 #000000',
+      borderRadius: '20px',
+      padding: 12,
+      textAlign: 'center',
+      border: '2px outset #bbb',
+      backgroundImage: 'linear-gradient(to bottom right, #777, #aaa, #ddd, #fff)'
+      }}>
+        hello {username}!{` \<${email}\> `} Your access level is {access}.
+      </div>
   }
 }
 
@@ -276,6 +316,38 @@ export async function activateUser(username){
   })
 }
 
+
+/**
+ * depricated
+ * @param param0 
+ * @returns 
+ */
+export function ProfileByIp({ip, setUser}) {
+  const { data, error } = useSWR('/api/getuserdetails?ip='+ip, { revalidateOnFocus: false })
+  const debug = true
+  useEffect(() => {
+    console.log('[ProfileByIp]This function is deprecated. Use Profile instead.');
+    setUser(data)
+  },[data])
+  if (error) {
+    return <Row><Col style={{visibility: (debug?'visible':'hidden'), position: (debug?'relative':'absolute')}}>
+        {JSON.stringify(error)}:User not cached. Please login or register.
+      </Col></Row>
+  }
+  if (!data) return <div>loading...</div>
+  else {
+    let {username, email, access} = data
+    data.message = 'Welcome back '+data.username+'!'
+    return <Row>
+        <Col sm={4}></Col>
+        <Col sm={4} className={'tcenter'} style={{color: 'white', background: 'gray', borderRadius: '90px'}}>
+          hello {username}!{`\<${email}\>`} Your access level is {access}.
+        </Col>
+        <Col sm={4}></Col>
+      </Row>
+  }
+}
+
 export function LoginNav(props) {
   const { user, homepage, style } = props
   return <a 
@@ -289,22 +361,39 @@ export function LoginNav(props) {
       </a>
 }
 
+/*export async function setUserActive(username: string){
+const [activeUsers,setActiveUsers,loaded] = useRegister(ACTIVEUSERS,[])
+    if(!activeUsers) setActiveUsers([{name: username, time: new Date().getTime()}]) 
+     else setActiveUsers([...JSON.parse(activeUsers).filter( 
+       ({time}) => { 
+         if(!time) return false 
+         if((new Date().getTime()) - time > 1000*60*(60/12)) return false//remove users that havent been active in the last hour 
+         return true 
+       } 
+     ), {name: username, time: new Date().getTime()}])}*/
+
 export const getServerSideProps: GetServerSideProps = async ({req, query}) => {
-  const method = query.userlogin?.toString()
-  const username = query.username?.toString()
+  const method = query.userlogin
+  const username = query.username
   const email = query.email?.toString().toLocaleLowerCase()
   const hash = sha224(query.email?.toString().toLocaleLowerCase()+''+query.password)
   const homepage = query.homepage!=undefined?query.homepage:'bridge'
   const ip = await requestIp.getClientIp(req)
-  if(method === 'logout'){
-    await sql`Update aspect_users_ SET ip = null WHERE username = ${username}`
-  }
-  if(method === 'register'){
-    const [user] = await sql`SELECT * FROM aspect_users_ WHERE hash = ${hash}`
-    if (!user) await sql`INSERT INTO aspect_users_ (username, email, hash, access, ip) values (${username}, ${email}, ${hash}, 0, ${ip});`
-  }
-  if(method === 'update'){
-    await sql`UPDATE aspect_users_ SET email = ${query.nemail.toString().toLowerCase()}, hash=${sha224(query.nemail.toString().toLocaleLowerCase()+''+query.password)} WHERE hash = ${sha224(query.cemail+''+query.password)}`
-  }
+  switch(method){
+    case  'logout':
+      await sql`Update aspect_users_ SET ip = null WHERE username = ${username}`
+      break
+    case 'register':
+      const [user] = await sql`SELECT * FROM aspect_users_ WHERE hash = ${hash}`
+      if (!user) await sql`INSERT INTO aspect_users_ (username, email, hash, access, ip) values (${username}, ${email}, ${hash}, 0, ${ip});`
+      break
+    case 'update':
+      await sql`UPDATE aspect_users_ SET email = ${query.nemail.toString().toLowerCase()}, hash=${sha224(query.nemail.toString().toLocaleLowerCase()+''+query.password)} WHERE hash = ${sha224(query.cemail+''+query.password)}`
+      break
+    case 'login':
+      break
+    default:
+      break
+  } 
   return {props: {ip: ip, homepage: homepage}}
 }
