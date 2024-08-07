@@ -1,9 +1,9 @@
 import sql from "../../lib/,base/sql";
-import { User } from "../login/[userlogin]";
+import { StoredUser, User } from "../../app/login/[action]/page";
 //url params use query
 //form submits use query
 //fetch uses body
-export default async function getUserDetails(req, res): Promise<Partial<User>> {
+export default async function getUser(req, res): Promise<Partial<User>> {
     const { email, username, hash, ip, command, id} = req.query;
     let user = null
     if(command) switch(command){
@@ -35,19 +35,21 @@ export default async function getUserDetails(req, res): Promise<Partial<User>> {
         default:
             break;
     }
-    else if(ip){
-        if (hash&&hash!=null) user = await getUserByHash(hash, ip)
+    else if(ip && ip!=null) user = await getUserByIp(ip)/*{
+        if (hash && hash!=null) user = await getUserByHash(hash, ip)
         else user = await getUserByIp(ip)
-    }
+        if(!user) return res.status(400).json({message: 'No user record with ip '+ip+''})
+    }*/
+    else if( hash && hash!=null ) user = await getUserByHash(hash)
     else if( email ) user = await getUserByEmail(email)
     else if( username ) user = await getUserByUsername(username)
     else return res.status(400).json({message: 'No email, username or hash provided.'})
     return res.status(200).json(user);
 }
 //ONLY FOR LOGIN
-async function getUserByHash(hash, ip) {
+async function getUserByHash(hash/*, ip*/) {
     const [user] = await sql`SELECT * FROM aspect_users_ WHERE hash = ${hash}`
-    if (user) await sql`Update aspect_users_ SET ip = ${ip} WHERE hash = ${hash}`
+    //if (user) await sql`Update aspect_users_ SET ip = ${ip} WHERE hash = ${hash}`
     return user
 }//4194b857972439ee6bd294b9889c2ebec9cbbaa03a9312a16935225c
 async function setHashById(hash: string, id: number) {
@@ -67,9 +69,9 @@ async function getHashByIp(ip) {
     const [hash] = await sql`SELECT hash FROM aspect_users_ WHERE ip = ${ip}`
     return hash
 }
-async function getUserByIp(ip) {
-    const [user] = await sql`SELECT * FROM aspect_users_ WHERE ip = ${ip}`
-    return user || await getUserByHash(await getHashByIp(ip), ip)
+export async function getUserByIp(ip) {
+    const [user]: [StoredUser] = await sql`SELECT * FROM aspect_users_ WHERE ip = ${ip}`
+    return user // || await getUserByHash(await getHashByIp(ip), ip)
 }
 async function getAllUsers() {
     const user = await sql`SELECT * FROM aspect_users_ WHERE 1`

@@ -1,0 +1,143 @@
+/*Recently Added*/
+:root, html, body, #__next{
+	height: 100%;
+	color: #ccc;
+	font-size: 1.05rem;
+	/*background-color: #000;*/
+}
+
+/*Aspect Bridge CSS*/
+:has(.aspect) * {
+	font-family: "Times New Roman", Times, serif;
+}
+:has(.aspect){
+	/*background-image:url("../assets/terraforge_bg.jpg");*/
+	background-color: #000;
+    background-size: cover;
+    background-repeat: no-repeat;
+	background-position: center;
+	background-attachment: fixed;
+}
+:has(.aspect) .side-nav .col a{
+	color: white;
+}
+:has(.aspect) h1, :has(.aspect) h2, :has(.aspect) h3, :has(.aspect) h4, :has(.aspect) h5{
+	font-weight:bold;
+	margin: 0;
+}
+:has(.aspect) hr{
+	border-top: 1px solid black;
+	opacity: 1;
+}
+:has(.aspect) .row{
+	margin:0;
+}
+:has(.aspect) .row>*{
+	padding: 5px;
+}
+:has(.aspect) head{
+	object-position: top;
+	float: top;
+}
+:has(.aspect) ul,:has(.aspect) li{
+    list-style:none;
+    padding:0;
+}
+:has(.aspect) a{
+	text-decoration:none;
+}
+:has(.aspect) .modal-content{
+	font-weight:bold;
+	border:2px solid #444;
+	background:#1C1C1C;
+}
+:has(.aspect) .modal-content, :has(.aspect) .close{
+	color:white;
+}
+:has(.aspect) .close{
+	opacity: 1;
+}
+:has(.aspect) .modal-title{
+	text-align:center;
+}
+:has(.aspect) .btn, :has(.aspect) input, :has(.aspect) textarea{
+	font-weight:bold;
+	border:2px solid #888;
+	background:#bbb;
+	color:#444;
+}
+:has(.aspect) ::-webkit-input-placeholder {
+   color: #457;
+}
+:has(.aspect) :-moz-placeholder { /* Firefox 18- */
+   color: #457;
+}
+:has(.aspect) ::-moz-placeholder {  /* Firefox 19+ */
+   color: #457;
+}
+:has(.aspect) :-ms-input-placeholder {  
+   color: #457;
+}
+:has(.aspect) .iframe-hidden{
+	border:0;
+	margin:0;
+	outline:none;
+}
+:has(.aspect) .box-shadow{
+	box-shadow: 10px 10px 5px #444 inset;
+}
+:has(.aspect) .link_button{
+	background:#fff;
+	margin:5px;
+	padding:2px;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	border-radius:5px;
+	box-shadow: 5px 5px 5px #00a;
+}
+:has(.aspect) .logo{
+	background-image: url("../assets/banner_back.jpg");
+    background-size:  100% 100%;/*auto 100%;*/
+    background-repeat: no-repeat;
+}
+:has(.aspect) .title{
+	color:#fff;
+}
+/*CHANGES TO REACT BOOTSTRAP*/
+#navaspect > .container-fluid > .navbar-collapse > .navbar-nav > .dropdown > .dropdown-menu{
+	background-color: gray;
+	z-index: 1;
+}
+
+/*Bootstrap Overrides*/
+@media (min-width: 992px){
+	.container, .container-lg, .container-md, .container-sm {
+		max-width: 85% !important;
+	}
+}
+@media (min-width: 768px){
+	.container, .container-md, .container-sm {
+		max-width: 90% !important;
+	}
+}
+@media (min-width: 576px){
+	.container, .container-sm {
+		max-width: 95% !important;
+	}
+}
+.container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 0;
+    width: 100%;
+	height: 100%;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    padding-right: calc(var(--bs-gutter-x) * .5);
+    padding-left: calc(var(--bs-gutter-x) * .5);
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.col {
+	max-height: 100%;
+}
