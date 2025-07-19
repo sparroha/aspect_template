@@ -1,7 +1,7 @@
+import { RegistryEntry } from '../../app/api/registry/route';
 import { ActiveUser } from '../../app/api/users/active/route';
 import sql from '../../lib/,base/sql';
 import { ACTIVEUSERS } from '../../lib/util/^activeusers';
-import { RegistryEntry } from './registry_old/[registry]';
 export default async function getActiveUsers(req, res){
     const nonuser: ActiveUser = {name: '420: No Users Active', access: 2, time: Date.now()}
     let regdata: ActiveUser[] = [nonuser]

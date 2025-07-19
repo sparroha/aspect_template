@@ -5,7 +5,7 @@ import { StoredUser, User } from "../../app/login/[action]/page";
 //fetch uses body
 export default async function getUser(req, res): Promise<Partial<User>> {
     const { email, username, hash, ip, command, id} = req.query;
-    let user = null
+    let user: any = null
     if(command) switch(command){
         case 'getall':
             user = await getAllUsers()
